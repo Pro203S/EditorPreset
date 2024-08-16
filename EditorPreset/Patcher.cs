@@ -1,6 +1,6 @@
 ﻿using ADOFAI;
 using HarmonyLib;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace EditorPreset
 {
@@ -9,9 +9,16 @@ namespace EditorPreset
         [HarmonyPatch(typeof(LevelData), "Setup")]
         public static class LvlData_Setup
         {
-            public static void Prefix(LevelData __instance)
+            public static void Postfix(LevelData __instance)
             {
-                Debug.Log("prefix");
+                if (!Main.IsEnabled) return;
+
+                
+                Main.Mod.Logger.Log("applying preset");
+
+                __instance.cameraSettings["zoom"] = (float)350;
+
+                Main.Mod.Logger.Log("applied preset");
             }
         }
     }
