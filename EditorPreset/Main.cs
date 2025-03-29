@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
-using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
 
 namespace EditorPreset
@@ -15,7 +14,6 @@ namespace EditorPreset
 
         public static void Startup(ModEntry entry)
         {
-            entry.Logger.Log("Starting!");
             Mod = entry;
             Mod.OnToggle = (modentry, value) =>
             {
@@ -36,20 +34,30 @@ namespace EditorPreset
             };
 
             setting = new Setting();
-            setting = UnityModManager.ModSettings.Load<Setting>(entry);
+            setting = ModSettings.Load<Setting>(entry);
         }
 
         private static void OnGUI(ModEntry modEntry)
         {
-            if (GUILayout.Button("go to main"))
+#if DEBUG
+            if (GUILayout.Button("메인 화면으로 가기"))
             {
                 ADOBase.GoToLevelSelect();
+            }
+#endif
+
+            switch (ModSettingsGUI.CurrentScreen)
+            {
+                case "MainScreen": ModSettingsGUI.GUI(); break;
+                case "SelectTrackAnimation": ModSettingsGUI.SelectAnimationType(ModSettingsGUI.AnimationType_Caption); break;
+                case "SelectTrackAnimationD": ModSettingsGUI.SelectAnimationType(ModSettingsGUI.AnimationType_Caption, isDisappear: true); break;
+                default: ModSettingsGUI.GUI(); break;
             }
         }
 
         private static void OnSaveGUI(ModEntry modEntry)
         {
-
+            setting.Save(modEntry);
         }
     }
 }
